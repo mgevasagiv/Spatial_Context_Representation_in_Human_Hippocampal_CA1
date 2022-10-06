@@ -3,9 +3,9 @@ Re-analysis of spatcon-project (with Halle Dimsdale-Zucker)
 
 Repository details
 
-Current repository contains the code used to generate analyses for the following paper:
+Current repository contains the code used to generate analyses for the following paper: Spatial context of retrieved memories is reflected by opposing roles for human hippocampal subfields CA1 and CA23DG (in prep)
 
-Based on dataset freely shared on - 
+This is a re-analysis of a dataset (see original publication details below) freely shared on -  
 https://osf.io/5th8r/
 
 A different repository (https://github.com/hallez/abcdcon_pub) contains the code used for basic analysis of the raw data, and also includes analysis reported in:
