@@ -39,7 +39,7 @@ unique(alldata_table_house.condition)
 % Conditions left are all in diff videos - same house or diff house
 
 % Remove items with wrong encoding during post-viewing testing
-A = find(ismember(alldata_table_house.condition1,'unknownRoom')); 
+A = find(ismember(alldata_table_house.condition1,'unknownRoom'));
 alldata_table_house(A,:) = [];
 
 row_num1 = find(ismember(alldata_table_house.entryRoom,'entryRoom'));
@@ -84,92 +84,94 @@ alldata_table_house_right(A,:) = [];
 A = find(ismember(alldata_table_house_right.condition1,'unknownRoom')); % remove items with wrong encoding during testing
 alldata_table_house_right(A,:) = [];
 
-
-formula = 'z~spaceCond_joint*roi + spaceCond_joint*hemi + roi*hemi + (1|subj)';
-lme1 = fitlme(alldata_table_house,formula);
-formula = 'z~spaceCond_joint*roi*hemi + (1|subj)';
-lme2 = fitlme(alldata_table_house,formula);
-results = compare(lme1,lme2);
-disp('3-way interaction - spaceCond_joint, roi, hem')
-disp(results.pValue)
-% Significant hem/roi interaction
-% significant interaction P = 0.03
-% For spaceCond:
-% significant interaction P = 0.002
-
-row_num1 = find(ismember(alldata_table_house.roi,'CA1_body'));
-row_num2 = find(ismember(alldata_table_house.roi,'CA2_3_DG_body'));
-alldata_table_house_ca1_ca23dg = alldata_table_house([row_num1(:)', row_num2(:)'],:) ;
-formula = 'z~spaceCond_joint*roi + spaceCond_joint*hemi + roi*hemi + (1|subj)';
-lme1 = fitlme(alldata_table_house_ca1_ca23dg,formula);
-formula = 'z~spaceCond_joint*roi*hemi + (1|subj)';
-lme2 = fitlme(alldata_table_house_ca1_ca23dg,formula);
-results = compare(lme1,lme2);
-disp('3-way interaction - spaceCond_joint, roi, hem')
-disp(results.pValue)
-
-
-formula = 'z~spaceCond_joint + roi + (1|subj)';
-lme1 = fitlme(alldata_table_house_ca1_ca23dg,formula);
-formula = 'z~spaceCond_joint*roi + (1|subj)';
-lme2 = fitlme(alldata_table_house_ca1_ca23dg,formula);
-results = compare(lme1,lme2);
-disp('2-way interaction - spaceCond_joint, roi, in left hem')
-disp(results.pValue)
-% significant interaction < 10^-4
-
-formula = 'z~spaceCond_joint + roi + (1|subj)';
-lme1 = fitlme(alldata_table_house_right,formula);
-formula = 'z~spaceCond_joint*roi + (1|subj)';
-lme2 = fitlme(alldata_table_house_right,formula);
-results = compare(lme1,lme2);
-disp('2-way interaction - spaceCond_joint, roi, in right hem')
-disp(results.pValue)
-% n.s interaction
-
-% Mixed effect model for space condition
-pvalue_vec = [];  test_str = [];
-for hem_i = 3
-    for roi_i = 1:7
-        if hem_i == 1
-            alldata_table_house_hem = alldata_table_house_left;
-        elseif hem_i == 2
-            alldata_table_house_hem = alldata_table_house_right;
-       elseif hem_i == 3
-            alldata_table_house_hem = alldata_table_house;
+if false % Exploratory data analysis to test the sensitivity to different aspects of space in the data - proximity to entry door
+    
+    formula = 'z~spaceCond_joint*roi + spaceCond_joint*hemi + roi*hemi + (1|subj)';
+    lme1 = fitlme(alldata_table_house,formula);
+    formula = 'z~spaceCond_joint*roi*hemi + (1|subj)';
+    lme2 = fitlme(alldata_table_house,formula);
+    results = compare(lme1,lme2);
+    disp('3-way interaction - spaceCond_joint, roi, hem')
+    disp(results.pValue)
+    % Significant hem/roi interaction
+    % significant interaction P = 0.03
+    % For spaceCond:
+    % significant interaction P = 0.002
+    
+    row_num1 = find(ismember(alldata_table_house.roi,'CA1_body'));
+    row_num2 = find(ismember(alldata_table_house.roi,'CA2_3_DG_body'));
+    alldata_table_house_ca1_ca23dg = alldata_table_house([row_num1(:)', row_num2(:)'],:) ;
+    formula = 'z~spaceCond_joint*roi + spaceCond_joint*hemi + roi*hemi + (1|subj)';
+    lme1 = fitlme(alldata_table_house_ca1_ca23dg,formula);
+    formula = 'z~spaceCond_joint*roi*hemi + (1|subj)';
+    lme2 = fitlme(alldata_table_house_ca1_ca23dg,formula);
+    results = compare(lme1,lme2);
+    disp('3-way interaction - spaceCond_joint, roi, hem')
+    disp(results.pValue)
+    
+    
+    formula = 'z~spaceCond_joint + roi + (1|subj)';
+    lme1 = fitlme(alldata_table_house_ca1_ca23dg,formula);
+    formula = 'z~spaceCond_joint*roi + (1|subj)';
+    lme2 = fitlme(alldata_table_house_ca1_ca23dg,formula);
+    results = compare(lme1,lme2);
+    disp('2-way interaction - spaceCond_joint, roi, in left hem')
+    disp(results.pValue)
+    % significant interaction < 10^-4
+    
+    formula = 'z~spaceCond_joint + roi + (1|subj)';
+    lme1 = fitlme(alldata_table_house_right,formula);
+    formula = 'z~spaceCond_joint*roi + (1|subj)';
+    lme2 = fitlme(alldata_table_house_right,formula);
+    results = compare(lme1,lme2);
+    disp('2-way interaction - spaceCond_joint, roi, in right hem')
+    disp(results.pValue)
+    % n.s interaction
+    
+    % Mixed effect model for space condition
+    pvalue_vec = [];  test_str = [];
+    for hem_i = 3
+        for roi_i = 1:7
+            if hem_i == 1
+                alldata_table_house_hem = alldata_table_house_left;
+            elseif hem_i == 2
+                alldata_table_house_hem = alldata_table_house_right;
+            elseif hem_i == 3
+                alldata_table_house_hem = alldata_table_house;
+            end
+            
+            row_num = find(ismember(alldata_table_house_hem.roi,roi_str{roi_i}));
+            alldata_table_house_hem_roi = alldata_table_house_hem(row_num,:);
+            
+            roi_test{roi_i} = unique(alldata_table_house_hem_roi.roi);
+            condition_val = unique(alldata_table_house_hem_roi.condition);
+            spaceCond_val = unique(alldata_table_house_hem_roi.spaceCond_joint);
+            room_cond_val = unique(alldata_table_house_hem_roi.room_cond);
+            
+            test_i = 1;
+            formula = 'z~ 1  + (1|subj)';
+            lme1 = fitlme(alldata_table_house_hem_roi,formula);
+            formula = 'z~ spaceCond_joint + (1|subj)';
+            lme2 = fitlme(alldata_table_house_hem_roi,formula);
+            results = compare(lme1,lme2);
+            test_str{test_i} = 'DV/DH/DR vs all others';
+            pvalue_vec(hem_i, roi_i,test_i) = results.pValue(2);
+            
+            row_num = find(ismember(alldata_table_house_hem_roi.condition,condition_val{2}));
+            alldata_table_samehouse_hem_roi = alldata_table_house_hem_roi(row_num,:);
+            test_i = 2;
+            formula = 'z ~ 1  + (1|subj)';
+            lme1 = fitlme(alldata_table_samehouse_hem_roi,formula);
+            formula = 'z ~ entryRoom + (1|subj)';
+            lme2 = fitlme(alldata_table_samehouse_hem_roi,formula);
+            results = compare(lme1,lme2);
+            test_str{test_i} = 'DV/SH entryRoom';
+            pvalue_vec(hem_i, roi_i,test_i) = results.pValue(2);
+            
         end
-        
-        row_num = find(ismember(alldata_table_house_hem.roi,roi_str{roi_i}));
-        alldata_table_house_hem_roi = alldata_table_house_hem(row_num,:);
-        
-        roi_test{roi_i} = unique(alldata_table_house_hem_roi.roi);
-        condition_val = unique(alldata_table_house_hem_roi.condition);
-        spaceCond_val = unique(alldata_table_house_hem_roi.spaceCond_joint);
-        room_cond_val = unique(alldata_table_house_hem_roi.room_cond);
-        
-        test_i = 1;
-        formula = 'z~ 1  + (1|subj)';
-        lme1 = fitlme(alldata_table_house_hem_roi,formula);
-        formula = 'z~ spaceCond_joint + (1|subj)';
-        lme2 = fitlme(alldata_table_house_hem_roi,formula);
-        results = compare(lme1,lme2);
-        test_str{test_i} = 'DV/DH/DR vs all others';
-        pvalue_vec(hem_i, roi_i,test_i) = results.pValue(2);
-
-        row_num = find(ismember(alldata_table_house_hem_roi.condition,condition_val{2}));
-        alldata_table_samehouse_hem_roi = alldata_table_house_hem_roi(row_num,:);
-        test_i = 2;
-        formula = 'z ~ 1  + (1|subj)';
-        lme1 = fitlme(alldata_table_samehouse_hem_roi,formula);
-        formula = 'z ~ entryRoom + (1|subj)';
-        lme2 = fitlme(alldata_table_samehouse_hem_roi,formula);
-        results = compare(lme1,lme2);
-        test_str{test_i} = 'DV/SH entryRoom';
-        pvalue_vec(hem_i, roi_i,test_i) = results.pValue(2);
-
     end
-end
-
+    
+end % various mixed effect models
 
 % 'DV/DH/DR vs all others' = pmERC and alERC are sig.
 
@@ -221,6 +223,9 @@ for subj_i = 1:length(subjects)
     rhit_perc_all(subj_i) = behavStats.rhit_perc;
 end
 
+
+
+% Adding RSA spatial score
 %%
 pvalue_vec = [];  test_str = []; pvalue_ranksum_vec = []; pval_all_subj = [];
 clear R_space R_rhit corr_p_space corr_p_rhit RSA_score_SUBJ_ROI
@@ -279,13 +284,13 @@ for hem_i = 1:2
             all_z2_subj_v2 = [all_z2_subj_v2 Z{2}'];
             pval_subj_v2(ii_s,hem_i,roi_i) = ranksum(Z{1},Z{2});
             RSA_score_SR_SUBJ_ROI(ii_s,hem_i,roi_i) = nanmedian(Z{1})-nanmedian(Z{2});
-     
+            
         end
         pval_all_subj(hem_i,roi_i) = ranksum(all_z1_subj, all_z2_subj);
         pval_all_subj_v2(hem_i,roi_i) = ranksum(all_z1_subj_v2, all_z2_subj_v2);
-
+        
         [R_space(hem_i,roi_i), corr_p_space(hem_i,roi_i)] = corr(RSA_score_SUBJ_ROI(:,hem_i,roi_i),HC_RC_perc_all');
-
+        
         [R_rhit(hem_i,roi_i), corr_p_rhit(hem_i,roi_i)] = corr(RSA_score_SUBJ_ROI(:,hem_i,roi_i),rhit_perc_all');
         
         % Adding another less extreme condition SH/DH but SR
@@ -295,4 +300,3 @@ for hem_i = 1:2
     end
 end
 
-%% Check space 

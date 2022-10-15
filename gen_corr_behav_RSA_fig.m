@@ -30,7 +30,7 @@ C = RSA_score_SUBJ_ROI(ind,hem_i,roi_i);
 
 hold all
 for ii = 1:length(HC_RC_perc_all)
-    plot(C(ii),100*B(ii),'o','color',ccmap(5+ii,:),'linewidth',2)
+    plot(C(ii),100*B(ii),'o','color','k','linewidth',2)
     if pval_subj(ii,hem_i,roi_i)<0.05
         plot(C(ii),100*B(ii),'k*','markersize',5)
     end
@@ -83,10 +83,10 @@ C = RSA_score_SUBJ_ROI(ind,hem_i,roi_i);
 
 hold all
 for ii = 1:length(rhit_perc_all)
-    plot(C(ii),100*B(ii),'o','color',ccmap(5+ii,:),'linewidth',2)
-    if pval_subj(ii,hem_i,roi_i)<0.05
-        plot(C(ii),100*B(ii),'k*','markersize',5)
-    end
+    plot(C(ii),100*B(ii),'o','color','k','linewidth',2)
+%     if pval_subj(ii,hem_i,roi_i)<0.05
+%         plot(C(ii),100*B(ii),'k*','markersize',5)
+%     end
 end
 axis square
 set(gca,'fontsize',12)
@@ -137,9 +137,9 @@ C = RSA_score_SR_SUBJ_ROI(ind,hem_i,roi_i);
 hold all
 for ii = 1:length(rhit_perc_all)
     plot(C(ii),100*B(ii),'o','color',ccmap(5+ii,:),'linewidth',2)
-    if pval_subj_v2(ii,hem_i,roi_i)<0.05
-        plot(C(ii),100*B(ii),'k*','markersize',5)
-    end
+%     if pval_subj_v2(ii,hem_i,roi_i)<0.05
+%         plot(C(ii),100*B(ii),'k*','markersize',5)
+%     end
 end
 axis square
 set(gca,'fontsize',12)

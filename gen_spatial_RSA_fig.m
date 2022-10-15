@@ -1,10 +1,23 @@
 function gen_spatial_RSA_fig()
 
 % prep data
-mixed_models_add_behav_for_fig1()
+mixed_models_add_behav_for_fig()
 
+condition_val = unique(alldata_table_house.condition);
+disp(condition_val{2})
 
-newA4figure('RSA_hip_space')
+% STATS 1 for MS - 
+% restrict for trials from different videos exploring the same house -
+row_num = find(ismember(alldata_table_house.condition,condition_val{2}));
+alldata_table_SameHouse = alldata_table_house(row_num,:);
+    
+formula = 'z~ roi+entryRoom +(1|subj)';
+lme1 = fitlme(alldata_table_SameHouse,formula);
+formula = 'z~entryRoom*roi + (1|subj)';
+lme2 = fitlme(alldata_table_SameHouse,formula);
+results = compare(lme1,lme2);
+disp('Same house (diff video) - 2-way interaction (both hem)- roi, room') 
+disp(results.pValue) % P = 2.628e-05
 
 formula = 'z~ entryRoom + hemi+(1|subj)';
 lme1 = fitlme(alldata_table_house,formula);
@@ -14,13 +27,13 @@ results = compare(lme1,lme2);
 disp('2-way interaction - hemi,room') % P = 0.64353
 disp(results.pValue)
 
-formula = 'z~ entryRoom + hemi+(1|subj)';
-lme1 = fitlme(alldata_table_house_ca1_ca23dg,formula);
-formula = 'z~entryRoom*hemi + (1|subj)';
-lme2 = fitlme(alldata_table_house_ca1_ca23dg,formula);
-results = compare(lme1,lme2);
-disp('2-way interaction - hemi,room') % P = 0.4
-disp(results.pValue)
+% formula = 'z~ entryRoom + hemi+(1|subj)';
+% lme1 = fitlme(alldata_table_house_ca1_ca23dg,formula);
+% formula = 'z~entryRoom*hemi + (1|subj)';
+% lme2 = fitlme(alldata_table_house_ca1_ca23dg,formula);
+% results = compare(lme1,lme2);
+% disp('2-way interaction - hemi,room') % P = 0.4
+% disp(results.pValue)
 
 formula = 'z~ entryRoom*hemi + roi*entryRoom + hemi*roi+(1|subj)';
 lme1 = fitlme(alldata_table_house,formula);
@@ -75,7 +88,7 @@ disp(results.pValue) % n.s.
 
 
 %%
-% Nice looking figures for plots
+% Nice looking figures for Manuscript figures
 x_w = 0.08;
 pos(1,:) = [0.1, 0.1, x_w, 0.15];
 pos(2,:) = [0.27, 0.1, x_w, 0.15];
@@ -85,18 +98,25 @@ pos(4,:) = [0.7, 0.1, x_w, 0.15];
 cmap = brewermap(5,'set1');
 barcolor(1,:) = cmap(5,:);
 barcolor(2,:) = cmap(3,:);
+barcolor(3,:) = [0.6 0.6 0.6];
 
-title_str1 = 'fig3b';
+
+title_str1 = 'fig2b';
 f0 = newA4figure(title_str1);
 pval_room = [];
 roi_list = [1,2];
+xlabel_str = {'entryRoom','innerRoom','cross room'};
+
+
 for roi_ind = 1:length(roi_list)
     
     roi_i = roi_list(roi_ind);
     
+    % restrict to PS of analyzed ROI - 
     row_num = find(ismember(alldata_table_house.roi,roi_str{roi_i}));
     alldata_table_house_roi = alldata_table_house(row_num,:);
 
+    % restrict for trials from different videos exploring the same house - 
     row_num = find(ismember(alldata_table_house_roi.condition,condition_val{2}));
     alldata_table_SameHouse_roi = alldata_table_house_roi(row_num,:);
     
@@ -115,8 +135,11 @@ for roi_ind = 1:length(roi_list)
     clear Z
     rows = find( ismember(alldata_table_SameHouse_roi.entryRoom,'entryRoom'));
     Z{1,1} =  alldata_table_SameHouse_roi.z(rows);
-    rows = find( ~ismember(alldata_table_SameHouse_roi.entryRoom,'entryRoom'));
+    rows = find( ismember(alldata_table_SameHouse_roi.entryRoom,'innerRoom'));
     Z{1,2}=  alldata_table_SameHouse_roi.z(rows);
+    rows = find( ismember(alldata_table_SameHouse_roi.entryRoom,'otherLoc'));
+    Z{1,3}=  alldata_table_SameHouse_roi.z(rows);
+  
     formula = 'z~ 1 +(1|subj)';
     lme1 = fitlme(alldata_table_SameHouse_roi,formula);
     formula = 'z~ entryRoom + (1|subj)';
@@ -126,21 +149,114 @@ for roi_ind = 1:length(roi_list)
     disp(results.pValue)
     mixed_effect_model_SH_p(roi_i) = results.pValue(2);
     figure(f0); axes('position',pos(roi_ind,:))
-    xlabel_str = {'entryRoom','other'};
-    pval_room(roi_i) = plot_bar_panel(Z,xlabel_str, barcolor);
-    axis([0,3,0,inf])
+    pval_room(roi_i,:) = plot_bar_panel3(Z,xlabel_str, barcolor);
+    axis([0,4,0,YTICKS(2)])
     set(gca,'ylim',YTICKS,'ytick',YTICKS,'yticklabel',YTICKS)
  
     POSITION = get(gca,'position');
     
-    % sub panel - all houses - entryRoom
+    
+    XLIM = get(gca,'xlim');
+    YLIM = get(gca,'Ylim');
+    text(XLIM(1),YLIM(2)+0.5*diff(YLIM),{ sprintf('%s',regexprep(roi_str{roi_i},'_',' ')),...
+                                             sprintf('SH mixed-effect: P = %1.2e',mixed_effect_model_SH_p(roi_i))} );
+end
+
+
+%%
+title_str1 = 'fig2b_diffHouse';
+f0 = newA4figure(title_str1);
+pval_room = [];
+roi_list = [1,2];
+xlabel_str = {'entryRoom','innerRoom','cross room'};
+
+
+for roi_ind = 1:length(roi_list)
+    
+    roi_i = roi_list(roi_ind);
+    
+    % restrict to PS of analyzed ROI - 
+    row_num = find(ismember(alldata_table_house.roi,roi_str{roi_i}));
+    alldata_table_house_roi = alldata_table_house(row_num,:);
+
+    % restrict for trials from different videos exploring the same house - 
+    row_num = find(ismember(alldata_table_house_roi.condition,condition_val{1}));
+    alldata_table_DiffHouse_roi = alldata_table_house_roi(row_num,:);
+    
+    if roi_ind == 1
+        YTICKS = [0 4]*10^-3;
+    elseif roi_ind == 2
+        YTICKS = [0 8]*10^-3;
+    elseif roi_ind == 3
+        YTICKS = [0 ,3.5]*10^-2;
+    elseif roi_ind == 4
+        YTICKS = [0 ,10]*10^-3;
+    end
+    
+     
+    % main panel - same house entryRoom
+    clear Z
+    rows = find( ismember(alldata_table_DiffHouse_roi.entryRoom,'entryRoom'));
+    Z{1,1} =  alldata_table_DiffHouse_roi.z(rows);
+    rows = find( ismember(alldata_table_DiffHouse_roi.entryRoom,'innerRoom'));
+    Z{1,2}=  alldata_table_DiffHouse_roi.z(rows);
+    rows = find( ismember(alldata_table_DiffHouse_roi.entryRoom,'otherLoc'));
+    Z{1,3}=  alldata_table_DiffHouse_roi.z(rows);
+  
+    formula = 'z~ 1 +(1|subj)';
+    lme1 = fitlme(alldata_table_DiffHouse_roi,formula);
+    formula = 'z~ entryRoom + (1|subj)';
+    lme2 = fitlme(alldata_table_DiffHouse_roi,formula);
+    results = compare(lme1,lme2);
+    disp('SH room') % 
+    disp(results.pValue)
+    mixed_effect_model_SH_p(roi_i) = results.pValue(2);
+    figure(f0); axes('position',pos(roi_ind,:))
+    pval_room(roi_i,:) = plot_bar_panel3(Z,xlabel_str, barcolor);
+    axis([0,4,0,YTICKS(2)])
+    set(gca,'ylim',YTICKS,'ytick',YTICKS,'yticklabel',YTICKS)
+ 
+    POSITION = get(gca,'position');
+    
+    
+    XLIM = get(gca,'xlim');
+    YLIM = get(gca,'Ylim');
+    text(XLIM(1),YLIM(2)+0.5*diff(YLIM),{ sprintf('%s',regexprep(roi_str{roi_i},'_',' ')),...
+                                             sprintf('SH mixed-effect: P = %1.2e',mixed_effect_model_SH_p(roi_i))} );
+end
+
+
+%% STATS when aggregating both houses together
+% sub panel - all houses - entryRoom
+title_str1 = 'fig2b_supData1';
+f0 = newA4figure(title_str1);
+
+roi_list = [1,2];
+for roi_ind = 1:length(roi_list)
+    
+    roi_i = roi_list(roi_ind);
+    
+    % restrict to PS of analyzed ROI - 
+    row_num = find(ismember(alldata_table_house.roi,roi_str{roi_i}));
+    alldata_table_house_roi = alldata_table_house(row_num,:);
+
+    if roi_ind == 1
+        YTICKS = [0 4]*10^-3;
+    elseif roi_ind == 2
+        YTICKS = [0 8]*10^-3;
+    elseif roi_ind == 3
+        YTICKS = [0 ,3.5]*10^-2;
+    elseif roi_ind == 4
+        YTICKS = [0 ,10]*10^-3;
+    end
+    
     clear Z
     rows = find( ismember(alldata_table_house_roi.entryRoom,'entryRoom'));
     Z{1,1} =  alldata_table_house_roi.z(rows);
-    rows = find( ~ismember(alldata_table_house_roi.entryRoom,'entryRoom'));
+    rows = find( ismember(alldata_table_house_roi.entryRoom,'innerRoom'));
     Z{1,2}=  alldata_table_house_roi.z(rows);
     
-    axes('position',[POSITION(1)+.85*POSITION(3), POSITION(2)+.87*POSITION(4),POSITION(3)*0.5,POSITION(4)*0.5])
+    axes('position',pos(roi_ind,:))
     pval_room(roi_i) = plot_bar_panel(Z,xlabel_str, barcolor);
     set(gca,'xticklabels',[])
     
@@ -153,20 +269,93 @@ for roi_ind = 1:length(roi_list)
     disp(results.pValue)
     mixed_effect_model_p(roi_i) = results.pValue(2);
     
+    
+    % For entry-room items - is house info reflected?
+    entryRoom_val = unique(alldata_table_house_roi.entryRoom);
+    row_num = find(ismember(alldata_table_house_roi.entryRoom,entryRoom_val{1}));
+    alldata_table_entryRoom = alldata_table_house_roi(row_num,:);
+    unique(alldata_table_entryRoom.condition)
+    
+    formula = 'z~ 1 +(1|subj)';
+    lme1 = fitlme(alldata_table_entryRoom,formula);
+    formula = 'z~ condition + (1|subj)';
+    lme2 = fitlme(alldata_table_entryRoom,formula);
+    results = compare(lme1,lme2);
+    disp('All item-pairs from entry-room - testing for house-identity')
+    disp(results.pValue) % P
+
+
     %title(sprintf('%s',regexprep(roi_str{roi_i},'_',' ')))
     axis([0,3,0,inf])
     set(gca,'ylim',YTICKS,'ytick',YTICKS,'yticklabel',YTICKS)
 
-   
-    set(gca,'ylim',YTICKS,'ytick',YTICKS,'yticklabel',YTICKS)
-    
     XLIM = get(gca,'xlim');
     YLIM = get(gca,'Ylim');
-     text(XLIM(1),YLIM(2)+0.5*diff(YLIM),{ sprintf('%s',regexprep(roi_str{roi_i},'_',' ')),...
-                                             sprintf('SH mixed: P = %1.2e',mixed_effect_model_SH_p(roi_i)),...
+    set(gca,'ylim',YTICKS,'ytick',YTICKS,'yticklabel',YTICKS)
+    text(XLIM(1),YLIM(2)+0.5*diff(YLIM),{ sprintf('%s',regexprep(roi_str{roi_i},'_',' ')),...
                                              sprintf('SH/DH mixed: P = %1.2e',mixed_effect_model_p(roi_i)) } );
 end
 
+
+%% STATS when aggregating both houses together
+% sub panel - all houses - entryRoom
+title_str1 = 'fig2b_supData2';
+f0 = newA4figure(title_str1);
+
+roi_list = [1,2];
+for roi_ind = 1:length(roi_list)
+    
+    roi_i = roi_list(roi_ind);
+    
+    % restrict to PS of analyzed ROI - 
+    row_num = find(ismember(alldata_table_house.roi,roi_str{roi_i}));
+    alldata_table_house_roi = alldata_table_house(row_num,:);
+
+    % restrict for trials from different videos exploring *different* houses - 
+    % Motivation - 
+    row_num = find(ismember(alldata_table_house_roi.condition,condition_val{1}));
+    alldata_table_DiffHouse_roi = alldata_table_house_roi(row_num,:);
+  
+    
+    if roi_ind == 1
+        YTICKS = [0 4]*10^-3;
+    elseif roi_ind == 2
+        YTICKS = [0 8]*10^-3;
+    elseif roi_ind == 3
+        YTICKS = [0 ,3.5]*10^-2;
+    elseif roi_ind == 4
+        YTICKS = [0 ,10]*10^-3;
+    end
+    
+    clear Z
+    rows = find( ismember(alldata_table_DiffHouse_roi.entryRoom,'entryRoom'));
+    Z{1,1} =  alldata_table_DiffHouse_roi.z(rows);
+    rows = find( ~ismember(alldata_table_DiffHouse_roi.entryRoom,'entryRoom'));
+    Z{1,2}=  alldata_table_DiffHouse_roi.z(rows);
+    
+    axes('position',pos(roi_ind,:))
+    pval_room(roi_i) = plot_bar_panel(Z,xlabel_str, barcolor);
+    set(gca,'xticklabels',[])
+    
+    formula = 'z~ 1 +(1|subj)';
+    lme1 = fitlme(alldata_table_DiffHouse_roi,formula);
+    formula = 'z~ entryRoom + (1|subj)';
+    lme2 = fitlme(alldata_table_DiffHouse_roi,formula);
+    results = compare(lme1,lme2);
+    disp('room') % 
+    disp(results.pValue)
+    mixed_effect_model_p(roi_i) = results.pValue(2);
+    
+    %title(sprintf('%s',regexprep(roi_str{roi_i},'_',' ')))
+    axis([0,3,0,inf])
+    set(gca,'ylim',YTICKS,'ytick',YTICKS,'yticklabel',YTICKS)
+
+    set(gca,'ylim',YTICKS,'ytick',YTICKS,'yticklabel',YTICKS)
+    text(XLIM(1),YLIM(2)+0.5*diff(YLIM),{ sprintf('%s',regexprep(roi_str{roi_i},'_',' ')),...
+                                             sprintf('DH mixed: P = %1.2e',mixed_effect_model_p(roi_i)) } );
+end
+
+%%
 PrintActiveFigs('E:\Dropbox\RanganathLab\spatcon_2\figures\LINKS')
 
 %% Alternative version
