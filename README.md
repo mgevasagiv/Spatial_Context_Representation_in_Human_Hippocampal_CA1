@@ -1,9 +1,11 @@
 # spatcon_2
-Re-analysis of spatcon-project (with Halle Dimsdale-Zucker)
+High res fMRI and a virtual spatial task used to study spatial information in hippocampal subfields (also other MTL subregions).
+Re-analysis of a freely available dataset
+Uses RSA for analyzing recogntion trials in the scanner
 
 Repository details
 
-Current repository contains the code used to generate analyses for the following paper: Spatial context of retrieved memories is reflected by opposing roles for human hippocampal subfields CA1 and CA23DG (in prep)
+Current repository contains the code used to generate analyses for the following paper: Human hippocampal subfields carry information about the spatial context of objects in close proximity to boundaries (in prep)
 
 This is a re-analysis of a dataset (see original publication details below) freely shared on -  
 https://osf.io/5th8r/
