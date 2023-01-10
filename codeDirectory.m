@@ -63,19 +63,18 @@ corrRSA_vs_GloVe.m
 
 %% MANUSCRIPT
 
-% Fig 2 - corr between RSA and behavior - creates subplots correalting a
-% RSA-based measure of neural difference to performance in task
-gen_corr_behav_RSA_fig ()
-% Uses mixed_models_add_behav_for_fig.m
-
 % Prepping behavioral stats for figure
-% fig 3A
+% fig 1A
 % sup fig 1
 gen_behav_stats_fig()
 
-% fig 3B-C
+% fig 2B-C
 gen_spatial_RSA_fig()
 
+% Fig 3 - corr between RSA and behavior - creates subplots correalting a
+% RSA-based measure of neural difference to performance in task
+gen_corr_behav_RSA_fig ()
+% Uses mixed_models_add_behav_for_fig.m
 
 % STATS
 % bootstrap the bar results

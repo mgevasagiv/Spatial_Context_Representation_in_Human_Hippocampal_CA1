@@ -140,6 +140,11 @@ for roi_ind = 1:length(roi_list)
     rows = find( ismember(alldata_table_SameHouse_roi.entryRoom,'otherLoc'));
     Z{1,3}=  alldata_table_SameHouse_roi.z(rows);
   
+    y = [Z{1,1}',Z{1,2}',Z{1,3}'];
+    g = [1*ones(1,length(Z{1,1})),2*ones(1,length(Z{1,2})),3*ones(1,length(Z{1,3}))];
+    [p_anovan(roi_i),tbl,stats] = anovan(y,{g});
+    figure; multcompare(stats)
+    
     formula = 'z~ 1 +(1|subj)';
     lme1 = fitlme(alldata_table_SameHouse_roi,formula);
     formula = 'z~ entryRoom + (1|subj)';
@@ -194,7 +199,6 @@ for roi_ind = 1:length(roi_list)
     end
     
      
-    % main panel - same house entryRoom
     clear Z
     rows = find( ismember(alldata_table_DiffHouse_roi.entryRoom,'entryRoom'));
     Z{1,1} =  alldata_table_DiffHouse_roi.z(rows);
@@ -202,7 +206,12 @@ for roi_ind = 1:length(roi_list)
     Z{1,2}=  alldata_table_DiffHouse_roi.z(rows);
     rows = find( ismember(alldata_table_DiffHouse_roi.entryRoom,'otherLoc'));
     Z{1,3}=  alldata_table_DiffHouse_roi.z(rows);
-  
+   
+    y = [Z{1,1}',Z{1,2}',Z{1,3}'];
+    g = [1*ones(1,length(Z{1,1})),2*ones(1,length(Z{1,2})),3*ones(1,length(Z{1,3}))];
+    [p_anovan(2+roi_i),tbl,stats] = anovan(y,{g});
+    figure; multcompare(stats)
+    
     formula = 'z~ 1 +(1|subj)';
     lme1 = fitlme(alldata_table_DiffHouse_roi,formula);
     formula = 'z~ entryRoom + (1|subj)';
