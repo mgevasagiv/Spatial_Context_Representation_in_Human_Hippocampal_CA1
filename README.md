@@ -1,5 +1,3 @@
-# spatcon_2
-
 Current repository contains the code used to generate analyses for the following paper: 
 **Geva-Sagiv M**, Dimsdale-Zucker HR, Williams AB, Ranganath C (2023). Proximity to Boundaries Reveals Spatial Context Representation in Human Hippocampal CA1. (Neuropsychologia, 2023). https://doi.org/10.1016/j.neuropsychologia.2023.108656
 
