@@ -4,7 +4,7 @@ Current repository contains the code used to generate analyses for the following
 **Geva-Sagiv M**, Dimsdale-Zucker HR, Williams AB, Ranganath C (2023). Proximity to Boundaries Reveals Spatial Context Representation in Human Hippocampal CA1. (Neuropsychologia, 2023). https://doi.org/10.1016/j.neuropsychologia.2023.108656
 
 We used a virtual reality exploration task paired with high-resolution fMRI to investigate how boundaries are
-reflected in the neural activity of the HC and the extended episodic memory network during recollection. Participants
+reflected in the neural activity of the hippocampus and the extended episodic memory network during recollection. Participants
 viewed a set of videos, containing items residing in two different spatial contexts (houses). Following the encoding
 of items in these spatial contexts, participants were scanned in an fMRI while they recollected items devoid of any
 spatial contextual information. In our experimental paradigm, objects encountered in the entry room were both in
